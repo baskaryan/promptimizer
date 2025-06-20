@@ -62,7 +62,7 @@ def read_experiment_results(experiment_name: str, filter: Literal['correct', 'in
     feedbacks_by_run = {}
     for f in feedbacks:
         feedbacks_by_run.setdefault(f.run_id, []).append({f.key: f.score})
-    return[
+    return [
         {
             "inputs": ex[run.reference_example_id].inputs, 
             "outputs": run.outputs, 
