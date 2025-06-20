@@ -14,10 +14,13 @@ dataset = "about-langgraph-3"
 # TODO: initial instructions and a prompt name
 initial_instructions = """Return whether or not this conversation is about langgraph"""
 
-template = ChatPromptTemplate([
-    {"role": "system", "content": "{{instructions}}"},
-    {"role": "user", "content": "{{input.outputs.messages}}"},
-])
+template = ChatPromptTemplate(
+    [
+        {"role": "system", "content": "{{instructions}}"},
+        {"role": "user", "content": "{{input.outputs.messages}}"},
+    ],
+    template_format='mustache'
+)
 prompt_handle = f"about-langgraph-react-{str(uuid.uuid4())[:8]}"
 client.push_prompt(prompt_handle, object=template.partial(instructions=initial_instructions))
 examples = {ex.id: ex for ex in client.list_examples(dataset_name=dataset)}
@@ -64,9 +67,9 @@ def read_experiment_results(experiment_name: str, filter: Literal['correct', 'in
         feedbacks_by_run.setdefault(f.run_id, []).append({f.key: f.score})
     return [
         {
-            "inputs": ex[run.reference_example_id].inputs, 
+            "inputs": examples[run.reference_example_id].inputs, 
             "outputs": run.outputs, 
-            "expected_outputs": ex[run.reference_example_id].outputs,
+            "expected_outputs": examples[run.reference_example_id].outputs,
             "feedback": feedbacks_by_run[run.id],
         } for run in runs
     ]
